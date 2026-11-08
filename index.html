@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Movie Mosaic</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Lora:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root{--bg:#0d0b09;--panel:#17130f;--ink:#f6ecd6;--muted:#c2b496;--gold:#d4a94a;--gold-hi:#f3dc8f;--gold-lo:#8a6a22;--carpet:#9c1a22;--cream:#f7efd9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Lora',Georgia,serif;line-height:1.55;background-image:repeating-conic-gradient(from 0deg at 50% -8%,rgba(212,169,74,.07) 0 4deg,transparent 4deg 10deg),radial-gradient(ellipse at 50% 0%,rgba(212,169,74,.14),transparent 60%)}
+.deco{font-family:'Limelight','Didot',Georgia,serif;font-weight:400;letter-spacing:.05em}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+.strip{height:26px;background:#050403;border-block:2px solid var(--gold-lo);background-image:radial-gradient(circle,var(--bg) 0 4px,transparent 5px);background-size:26px 26px;background-repeat:repeat-x;background-position:0 50%}
+header{text-align:center;padding:34px 0 24px}
+.marquee{position:relative;max-width:620px;margin:0 auto;padding:26px;border-radius:16px;background:linear-gradient(145deg,var(--gold-hi),var(--gold) 45%,var(--gold-lo));box-shadow:0 0 0 3px #000,0 0 40px rgba(243,220,143,.35),0 18px 40px rgba(0,0,0,.6)}
+.ring{position:absolute;inset:0;pointer-events:none}
+.bulb{position:absolute;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fffbe0 0 25%,#ffd45a 60%,#e0a52a);box-shadow:0 0 8px 3px rgba(255,214,90,.55),0 0 0 1px rgba(0,0,0,.35);animation:twinkle 1.4s steps(1) infinite}
+.bulb.o{animation-delay:-.7s}
+@keyframes twinkle{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}
+.board{background:var(--cream);border:3px solid #3a2c10;border-radius:8px;padding:14px 12px 20px;color:#14110b;background-image:linear-gradient(rgba(0,0,0,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.05) 1px,transparent 1px);background-size:100% 26px,26px 100%}
+.now{display:flex;justify-content:center;gap:14px;font-size:.8rem;letter-spacing:.4em;color:#3a2c10;font-weight:600}
+.now b{color:var(--carpet)}
+h1{margin:.1em 0 0;font-size:clamp(2.4rem,11vw,4.6rem);line-height:1;color:#14110b}
+h1 em{font-style:normal;color:var(--carpet)}
+.tag{font-style:italic;color:var(--muted);margin:22px auto 0;max-width:32rem}
+section{padding:22px 0}
+h2{font-size:1.6rem;color:var(--gold);margin:0 0 .5em;display:flex;align-items:center;gap:.6em}
+h2::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--gold-lo),transparent)}
+.card{background:var(--panel);border:1px solid #3a2f1c;border-top:3px solid var(--gold);border-radius:3px;padding:14px 18px}
+input[type=text],input[type=password]{width:100%;padding:10px 12px;border-radius:4px;border:1px solid var(--gold-lo);background:#0d0b09;color:var(--ink);font:inherit}
+.row{display:flex;gap:10px;margin-top:8px}
+button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid var(--gold-lo);background:linear-gradient(var(--gold-hi),var(--gold));color:#1a1206;padding:9px 16px;font-weight:600}
+button.ghost{background:transparent;color:var(--gold-hi)}
+button.link{background:none;border:0;color:var(--gold-hi);text-decoration:underline;padding:0}
+a{color:var(--gold-hi)}
+.status{color:var(--muted);font-style:italic;min-height:1.4em;margin:.5em 0 0}
+.results{display:grid;gap:8px;margin-top:10px}
+.res{display:flex;align-items:center;gap:12px;text-align:left;background:#0d0b09;color:var(--ink);border:1px solid #3a2f1c;font-weight:400}
+.res img,.res .ph{width:40px;height:60px;object-fit:cover;border-radius:2px;background:#2a2218;flex:none}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:10px}
+.pick{padding:0;background:#0d0b09;border:2px solid #3a2f1c;border-radius:3px;overflow:hidden;aspect-ratio:2/3}
+.pick:hover,.pick:focus-visible{border-color:var(--gold-hi)}
+.pick img{width:100%;height:100%;object-fit:cover;display:block}
+.mwrap{container-type:inline-size;background:var(--panel);border:2px solid var(--gold-lo);outline:1px solid var(--gold-lo);outline-offset:4px;border-radius:4px;padding:12px;margin:4px}
+.mosaic{--n:6;--g:6px;--cw:calc((100cqw - 5*var(--g))/6);display:grid;grid-template-columns:repeat(var(--n),1fr);grid-auto-rows:calc(var(--cw)*1.5);gap:var(--g);grid-auto-flow:dense}
+.t{border-radius:2px;overflow:hidden;border:1px solid rgba(243,220,143,.28);background:#2a2218}
+.t.big{grid-column:span 2;grid-row:span 2;border:2px solid var(--gold);box-shadow:0 0 14px rgba(212,169,74,.35)}
+.t img{width:100%;height:100%;object-fit:cover;display:block}
+.empty{color:var(--muted);font-style:italic;text-align:center;padding:30px 10px}
+.list{display:grid;gap:8px}
+.item{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel);border:1px solid #3a2f1c;border-radius:4px;padding:8px 12px}
+.item .name{flex:1;min-width:150px}
+.item.fav{border-color:var(--gold)}
+footer{text-align:center;padding:24px 0 40px;color:var(--muted);font-size:.85rem}
+@media (max-width:560px){.mosaic{--n:4;--cw:calc((100cqw - 3*var(--g))/4)}}
+@media (prefers-reduced-motion:reduce){.bulb{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="strip" aria-hidden="true"></div>
+<header class="wrap">
+  <div class="marquee">
+    <div class="ring" id="ring" aria-hidden="true"></div>
+    <div class="board"><div class="now"><b>★</b> NOW SHOWING <b>★</b></div><h1 class="deco">Movie <em>Mosaic</em></h1></div>
+  </div>
+  <p class="tag">The movies I love, on one poster. Favorites get the biggest spot.</p>
+</header>
+<div class="strip" aria-hidden="true"></div>
+
+<main class="wrap">
+  <section id="add">
+    <h2 class="deco">Add a movie</h2>
+    <div class="card">
+      <form id="sform"><label for="q">Movie title</label>
+        <div class="row"><input type="text" id="q" placeholder="e.g. Interstellar" autocomplete="off"><button type="submit">Search</button></div>
+      </form>
+      <p class="status" id="status" role="status"></p>
+      <div id="step"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="deco">My mosaic</h2>
+    <div class="mwrap"><div class="mosaic" id="mosaic"></div></div>
+  </section>
+
+  <section id="listsec" hidden>
+    <h2 class="deco">My movies</h2>
+    <div class="list" id="list"></div>
+  </section>
+</main>
+
+<div class="strip" aria-hidden="true"></div>
+<footer class="wrap">This product uses the TMDB API but is not endorsed or certified by TMDB.<br>Movie Mosaic · Learn, Vibe, Build final project</footer>
+
+<script>
+(function(){
+var IMG='https://image.tmdb.org/t/p/';
+// Paste your Cloudflare Worker address here (see README)
+var WORKER='https://movie-mosaic-posters.lnrbug.workers.dev';
+var movies=[];
+var $=function(i){return document.getElementById(i)};
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function load(){try{movies=JSON.parse(localStorage.getItem('mm_movies')||'[]')}catch(e){movies=[]}}
+function save(){try{localStorage.setItem('mm_movies',JSON.stringify(movies))}catch(e){}}
+function say(t){$('status').textContent=t||''}
+
+function api(path){
+  if(WORKER.indexOf('YOUR-WORKER')>-1)return Promise.reject(new Error('setup'));
+  return fetch(WORKER+path).then(function(r){if(!r.ok)throw new Error(String(r.status));return r.json()});
+}
+function fail(e){say(String(e.message)==='setup'?'Almost there: paste your Worker address into index.html (see README).':'Couldn’t reach the poster service. Try again in a moment.')}
+
+$('sform').onsubmit=function(ev){
+  ev.preventDefault();var q=$('q').value.trim();if(!q)return;
+  $('step').innerHTML='';say('Searching…');
+  api('/search?query='+encodeURIComponent(q)).then(function(d){
+    var r=(d.results||[]).slice(0,6);
+    if(!r.length){say('No movies found. Try another title.');return}
+    say('Which one did you mean?');
+    var box=el('div','results');
+    r.forEach(function(m){
+      var b=el('button','res');
+      if(m.poster_path){var im=el('img');im.src=IMG+'w92'+m.poster_path;im.alt='';b.appendChild(im)}else b.appendChild(el('span','ph'));
+      var y=(m.release_date||'').slice(0,4);
+      b.appendChild(el('span','',m.title+(y?' ('+y+')':'')));
+      b.onclick=function(){choose(m)};box.appendChild(b);
+    });
+    $('step').appendChild(box);
+  }).catch(fail);
+};
+
+function choose(m){
+  $('step').innerHTML='';say('Finding posters…');
+  api('/images/'+m.id).then(function(d){
+    var ps=(d.posters||[]).slice(0,12).map(function(p){return p.file_path});
+    if(!ps.length&&m.poster_path)ps=[m.poster_path];
+    if(!ps.length){say('No posters found for that movie.');return}
+    say('Pick a poster for '+m.title+':');
+    var box=el('div','picks');
+    ps.forEach(function(path){
+      var b=el('button','pick');b.setAttribute('aria-label','Use this poster for '+m.title);
+      var im=el('img');im.src=IMG+'w185'+path;im.alt='Poster option for '+m.title;b.appendChild(im);
+      b.onclick=function(){add(m,path)};box.appendChild(b);
+    });
+    $('step').appendChild(box);
+  }).catch(fail);
+}
+
+function add(m,path){
+  var y=(m.release_date||'').slice(0,4),ex=movies.filter(function(x){return x.id===m.id})[0];
+  if(ex)ex.poster=path;else movies.push({id:m.id,title:m.title,year:y,poster:path,fav:false});
+  save();render();$('step').innerHTML='';$('q').value='';say(m.title+' is on your mosaic.');
+}
+
+function render(){
+  var mo=$('mosaic');mo.innerHTML='';
+  var sorted=movies.filter(function(m){return m.fav}).concat(movies.filter(function(m){return !m.fav}));
+  if(!sorted.length)mo.appendChild(el('p','empty','Add a movie to start your mosaic.'));
+  sorted.forEach(function(m){
+    var t=el('div','t'+(m.fav?' big':''));t.title=m.title;
+    var im=el('img');im.src=IMG+(m.fav?'w500':'w342')+m.poster;im.alt=m.title+' poster';im.loading='lazy';
+    t.appendChild(im);mo.appendChild(t);
+  });
+  var l=$('list');l.innerHTML='';$('listsec').hidden=!movies.length;
+  movies.forEach(function(m){
+    var r=el('div','item'+(m.fav?' fav':''));
+    r.appendChild(el('span','name',m.title+(m.year?' ('+m.year+')':'')));
+    var f=el('button','ghost',m.fav?'★ Favorite':'☆ Make favorite');
+    f.setAttribute('aria-pressed',m.fav?'true':'false');
+    f.onclick=function(){m.fav=!m.fav;save();render()};
+    var x=el('button','ghost','Remove');
+    x.onclick=function(){movies=movies.filter(function(z){return z.id!==m.id});save();render()};
+    r.appendChild(f);r.appendChild(x);l.appendChild(r);
+  });
+}
+
+// evenly spaced marquee bulbs
+var mq=document.querySelector('.marquee'),ring=$('ring');
+function bulbs(){
+  var W=mq.clientWidth,H=mq.clientHeight,i=13,g=34,x0=i,x1=W-i,y0=i,y1=H-i;
+  var nw=Math.max(2,Math.round((x1-x0)/g)),nh=Math.max(2,Math.round((y1-y0)/g)),p=[],k;
+  for(k=0;k<nw;k++)p.push([x0+(x1-x0)*k/nw,y0]);
+  for(k=0;k<nh;k++)p.push([x1,y0+(y1-y0)*k/nh]);
+  for(k=0;k<nw;k++)p.push([x1-(x1-x0)*k/nw,y1]);
+  for(k=0;k<nh;k++)p.push([x0,y1-(y1-y0)*k/nh]);
+  ring.innerHTML='';
+  p.forEach(function(c,n){var b=el('span','bulb '+(n%2?'o':'e'));b.style.left=(c[0]-7)+'px';b.style.top=(c[1]-7)+'px';ring.appendChild(b)});
+}
+bulbs();addEventListener('resize',bulbs);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(bulbs);
+
+load();render();
+})();
+</script>
+</body>
+</html>
